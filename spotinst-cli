@@ -235,7 +235,6 @@ parser.add_option("--replace-health", action="store", dest="health", choices=['E
 parser.add_option("--user-data", action="store", dest="user_data", help="updated user data - supply a file path which contains the user data script (cloud init)")
 parser.add_option("--detach-batch", action="store_true", dest="detach_batch", help="detach all instances for specific batch - choose from a list of batches")
 parser.add_option("-y", "--skip-validation", action="store_true", dest="skip_validation", help="skip prompt validation for non-interactive mode")
-# my change
 parser.add_option("-e", "--exact", type="string", action="callback", dest="exact", callback=parser_split, help="grep exactly")
 
 (options, args) = parser.parse_args()
