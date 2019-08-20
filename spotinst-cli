@@ -151,7 +151,7 @@ def check_change_in_target(group_name, current_group_target, desired_group_targe
     ans_change = "y"
     if int(target_change) >= alert_threshold and not options.skip_validation:
         print "{} target value is: {}, requested target is: {}.".format(group_name, current_group_target, desired_group_target)
-        ans_change = raw_input("This represent a change of over 30%, are you sure you want to proceed? [y/n] ")
+        ans_change = raw_input("This represent a change of over {}%, are you sure you want to proceed? [y/n] ".format(alert_threshold))
     return ans_change
 
 
@@ -220,22 +220,21 @@ parser.add_option("-s", "--get-status", action="store_true", dest="status", defa
 parser.add_option("--suspension-status", action="store_true", dest="suspension", default="", help="get groups suspension status")
 parser.add_option("-u", "--ungrep", type="string", action="callback", default="", callback=parser_split, dest="ungrep", help="text to exclude groups")
 parser.add_option("-l", "--list", action="store_true", dest="list", help="show group list and exit")
-parser.add_option("--min", action="store", dest="min", type=int, help="update group minimum capacity, must suuply with max and target")
+parser.add_option("--min", action="store", dest="min", type=int, help="update group minimum capacity, must supply with max and target")
 parser.add_option("--target", action="store", dest="target", type=int, help="update group target capacity, must supply with min and max")
 parser.add_option("--max", action="store", dest="max", type=int, help="update group maximum capacity, must supply with min and target")
 parser.add_option("--scale-up", action="store", dest="scale_up", type=int, help="scale up group by X number of instances")
 parser.add_option("--scale-down", action="store", dest="scale_down", type=int, help="scale down group by X number of instances")
-parser.add_option("--suspend", action="store", dest="suspend", choices=['AUTO_SCALE', 'AUTO_HEALING' , 'BOTH'], help="suspend scaling or healing for a group, or BOTH to freeze both of them")
-parser.add_option("--unsuspend", action="store", dest="unsuspend", choices=['AUTO_SCALE', 'AUTO_HEALING' , 'BOTH'], help="unsuspend scaling or healing for a group, or BOTH to freeze both of them")
+parser.add_option("--suspend", action="store", dest="suspend", choices=['AUTO_SCALE', 'AUTO_HEALING' , 'BOTH'], help="suspend scaling or healing for a group. (AUTO_SCALE/AUTO_HEALING/BOTH)")
+parser.add_option("--unsuspend", action="store", dest="unsuspend", choices=['AUTO_SCALE', 'AUTO_HEALING' , 'BOTH'], help="unsuspend scaling or healing for a group. (AUTO_SCALE/AUTO_HEALING/BOTH)")
 parser.add_option("--roll", action="store_true", dest="roll", help="roll a group, must supply batch-size, and grace-period")
 parser.add_option("--batch-size", action="store", dest="batch", type=int, help="roll batch size - must supply with the roll flag")
 parser.add_option("--grace-period", action="store", dest="grace", type=int, help="roll grace period - must supply with the roll flag")
 parser.add_option("--replace-ami", action="store", dest="ami", help="replace AMI for group")
-parser.add_option("--replace-health", action="store", dest="health", choices=['EC2', 'ELB', "HCS"], help="replace health check type for a group")
+parser.add_option("--replace-health", action="store", dest="health", choices=['EC2', 'ELB', "HCS"], help="replace health check type for a group (EC2/ELB/HCS)")
 parser.add_option("--user-data", action="store", dest="user_data", help="updated user data - supply a file path which contains the user data script (cloud init)")
 parser.add_option("--detach-batch", action="store_true", dest="detach_batch", help="detach all instances for specific batch - choose from a list of batches")
 parser.add_option("-y", "--skip-validation", action="store_true", dest="skip_validation", help="skip prompt validation for non-interactive mode")
-# my change
 parser.add_option("-e", "--exact", type="string", action="callback", dest="exact", callback=parser_split, help="grep exactly")
 
 (options, args) = parser.parse_args()
@@ -393,11 +392,13 @@ for group, group_values in groups_to_update.iteritems():
         if options.scale_up is not None:
             command = "up"
             adjustment = options.scale_up
+            target = int(group_values[2]) + int(adjustment)
         elif options.scale_down is not None:
             command = "down"
             adjustment = options.scale_down
+            target = int(group_values[2]) - int(adjustment)
         # check that this change does not pass the percent_alert_threshold
-        ans = check_change_in_target(group, group_values[2], int(adjustment) + int(group_values[2]), percent_alert_threshold)
+        ans = check_change_in_target(group, group_values[2], target, percent_alert_threshold)
         if ans != "y":
             print "\nSkipping update for this group..."
             continue
