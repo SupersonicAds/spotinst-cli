@@ -468,7 +468,6 @@ for group, group_values in groups_to_update.iteritems():
     if res.status_code == 200:
         if req_type == 'POST' and options.show_response == 'True':
             print res.content
-            print res
         else:
             print_in_color('green', "Update was successful!")
     else:
