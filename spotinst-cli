@@ -237,7 +237,7 @@ parser.add_option("--user-data", action="store", dest="user_data", help="updated
 parser.add_option("--detach-batch", action="store_true", dest="detach_batch", help="detach all instances for specific batch - choose from a list of batches")
 parser.add_option("-y", "--skip-validation", action="store_true", dest="skip_validation", help="skip prompt validation for non-interactive mode")
 parser.add_option("-e", "--exact", type="string", action="callback", dest="exact", callback=parser_split, help="grep exactly")
-parser.add_option("--show-request", action="store", dest="show_request", type="string" , help="Put True here is you want to see the request")
+parser.add_option("--show-response", action="store", dest="show_response", type="string" , help="Put True here is you want to see the request")
 
 
 (options, args) = parser.parse_args()
@@ -463,10 +463,10 @@ for group, group_values in groups_to_update.iteritems():
     print message
     res = query_api(req_path, token, req_type, payload)
     if res.status_code == 200:
-        if req_type == 'GET' and options.show_request == 'True':
+        if req_type == 'GET' and options.show_response == 'True':
             print res.content
     if res.status_code == 200:
-        if req_type == 'POST' and options.show_request == 'True':
+        if req_type == 'POST' and options.show_response == 'True':
             print res.content
             print res
         else:
