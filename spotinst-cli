@@ -227,6 +227,7 @@ parser.add_option("--scale-up", action="store", dest="scale_up", type=int, help=
 parser.add_option("--scale-down", action="store", dest="scale_down", type=int, help="scale down group by X number of instances")
 parser.add_option("--suspend", action="store", dest="suspend", choices=['AUTO_SCALE', 'AUTO_HEALING' , 'BOTH'], help="suspend scaling or healing for a group. (AUTO_SCALE/AUTO_HEALING/BOTH)")
 parser.add_option("--unsuspend", action="store", dest="unsuspend", choices=['AUTO_SCALE', 'AUTO_HEALING' , 'BOTH'], help="unsuspend scaling or healing for a group. (AUTO_SCALE/AUTO_HEALING/BOTH)")
+parser.add_option("--ttl", action="store", dest="ttl", type=int, help="set an expiration for your suspension request - in minutes")
 parser.add_option("--roll", action="store_true", dest="roll", help="roll a group, must supply batch-size, and grace-period")
 parser.add_option("--batch-size", action="store", dest="batch", type=int, help="roll batch size - must supply with the roll flag")
 parser.add_option("--grace-period", action="store", dest="grace", type=int, help="roll grace period - must supply with the roll flag")
@@ -236,6 +237,8 @@ parser.add_option("--user-data", action="store", dest="user_data", help="updated
 parser.add_option("--detach-batch", action="store_true", dest="detach_batch", help="detach all instances for specific batch - choose from a list of batches")
 parser.add_option("-y", "--skip-validation", action="store_true", dest="skip_validation", help="skip prompt validation for non-interactive mode")
 parser.add_option("-e", "--exact", type="string", action="callback", dest="exact", callback=parser_split, help="grep exactly")
+parser.add_option("--show-request", action="store", dest="show_request", type="string" , help="Put True here is you want to see the request")
+
 
 (options, args) = parser.parse_args()
 
@@ -367,23 +370,19 @@ for group, group_values in groups_to_update.iteritems():
         req_path = "{}/{}/suspension".format(base_path, group_id)
 
         if options.suspend is not None:
-            if options.suspend != 'BOTH':
-                req_type = 'POST'
-                command = "suspend"
-                payload = '{"processes":["%s"]}' % options.suspend
+            req_type = 'POST'
+            command = "suspend"
+            if options.ttl is None:
+                payload = dumps({"suspensions": [{"name": options.suspend}]})
             else:
-                req_type = 'POST'
-                command = "suspend"
-                payload = '{"processes":["AUTO_SCALE","AUTO_HEALING"]}'
+                payload = dumps({"suspensions": [{"name": options.suspend, "ttlInMinutes": options.ttl}]})
+
+
         elif options.unsuspend is not None:
-            if options.unsuspend != 'BOTH':
-                req_type = 'DELETE'
-                command = "unsuspend"
-                payload = '{"processes":["%s"]}' % options.unsuspend
-            else:
-                req_type = 'DELETE'
-                command = "unsuspend"
-                payload = '{"processes":["AUTO_SCALE","AUTO_HEALING"]}'
+            req_type = 'DELETE'
+            command = "unsuspend"
+            payload = '{"processes":["%s"]}' % options.unsuspend
+
 
         message = "sending request to {} the group".format(command)
     # handle scale request
@@ -464,8 +463,12 @@ for group, group_values in groups_to_update.iteritems():
     print message
     res = query_api(req_path, token, req_type, payload)
     if res.status_code == 200:
-        if req_type == 'GET':
+        if req_type == 'GET' and options.show_request == 'True':
             print res.content
+    if res.status_code == 200:
+        if req_type == 'POST' and options.show_request == 'True':
+            print res.content
+            print res
         else:
             print_in_color('green', "Update was successful!")
     else:
