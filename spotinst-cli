@@ -465,8 +465,15 @@ for group, group_values in groups_to_update.iteritems():
     if res.status_code == 200:
         if req_type == 'GET' and options.show_response == 'True':
             print res.content
-    if res.status_code == 200:
-        if req_type == 'POST' and options.show_response == 'True':
+        elif options.suspension:
+            json_response = loads(res.content)
+            if not json_response['response']['items']:
+                print "No suspensions in this Elastigroup"
+            else:
+                for suspension_type in json_response['response']['items']:
+                    print suspension_type['processes']
+
+        elif req_type == 'POST' and options.show_response == 'True':
             print res.content
         else:
             print_in_color('green', "Update was successful!")
