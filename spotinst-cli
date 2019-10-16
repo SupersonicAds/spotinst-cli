@@ -373,12 +373,12 @@ for group, group_values in groups_to_update.iteritems():
             req_type = 'POST'
             command = "suspend"
             if options.ttl is None:
-                if options.suspend is not "BOTH":
+                if options.suspend != "BOTH":
                     payload = dumps({"suspensions": [{"name": options.suspend}]})
                 else:
                     payload = dumps({"suspensions": [{"name": "AUTO_HEALING"}, {"name": "AUTO_SCALE"}]})
             else:
-                if options.suspend is not "BOTH":
+                if options.suspend != "BOTH":
                     payload = dumps({"suspensions": [{"name": options.suspend, "ttlInMinutes": options.ttl}]})
                 else:
                     payload = dumps({"suspensions": [{"name": "AUTO_HEALING", "ttlInMinutes": options.ttl}, {"name": "AUTO_SCALE", "ttlInMinutes": options.ttl}]})
@@ -422,7 +422,7 @@ for group, group_values in groups_to_update.iteritems():
         if change_ans != "y":
             print "\nSkipping update for this group..."
             continue
-        payload = dumps({ "group": { "capacity": { "target": options.target, "minimum": options.min , "maximum": options.max }}})
+        payload = dumps({"group": {"capacity": {"target": options.target, "minimum": options.min, "maximum": options.max}}})
         req_type = 'PUT'
         message = "sending the following payload: {}".format(payload)
         req_path = "{}/{}".format(base_path, group_id)
@@ -431,7 +431,7 @@ for group, group_values in groups_to_update.iteritems():
     elif options.roll is not None and options.batch is not None and options.grace is not None:
         req_type = 'PUT'
         req_path = "{}/{}/roll".format(base_path, group_id)
-        payload = dumps({ "batchSizePercentage" : options.batch, "gracePeriod" : options.grace })
+        payload = dumps({"batchSizePercentage": options.batch, "gracePeriod" : options.grace})
         message = "rolling group: {} with batch-size: {} and a grace period: {}".format(group, options.batch, options.grace)
 
     # handle replace ami
