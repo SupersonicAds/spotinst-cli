@@ -226,7 +226,7 @@ parser.add_option("--max", action="store", dest="max", type=int, help="update gr
 parser.add_option("--scale-up", action="store", dest="scale_up", type=int, help="scale up group by X number of instances")
 parser.add_option("--scale-down", action="store", dest="scale_down", type=int, help="scale down group by X number of instances")
 parser.add_option("--suspend", action="store", dest="suspend", choices=['AUTO_SCALE', 'AUTO_HEALING', 'OUT_OF_STRATEGY', 'PREVENTIVE_REPLACEMENT', 'REVERT_PREFERRED', 'BOTH'], help="suspend scaling or healing for a group. use the BOTH option to suspend scaling & healing (AUTO_SCALE/AUTO_HEALING/BOTH/REVERT_PREFERRED/OUT_OF_STRATEGY/PREVENTIVE_REPLACEMENT)")
-parser.add_option("--unsuspend", action="store", dest="unsuspend", choices=['AUTO_SCALE', 'AUTO_HEALING', 'BOTH'], help="unsuspend scaling or healing for a group. (AUTO_SCALE/AUTO_HEALING/BOTH/REVERT_PREFERRED/OUT_OF_STRATEGY/PREVENTIVE_REPLACEMENT)")
+parser.add_option("--unsuspend", action="store", dest="unsuspend", choices=['AUTO_SCALE', 'AUTO_HEALING', 'OUT_OF_STRATEGY', 'PREVENTIVE_REPLACEMENT', 'REVERT_PREFERRED', 'BOTH'], help="unsuspend scaling or healing for a group. (AUTO_SCALE/AUTO_HEALING/BOTH/REVERT_PREFERRED/OUT_OF_STRATEGY/PREVENTIVE_REPLACEMENT)")
 parser.add_option("--ttl", action="store", dest="ttl", type=int, help="set an expiration for your suspension request - in minutes ( 10/20/60/300/600) ")
 parser.add_option("--roll", action="store_true", dest="roll", help="roll a group, must supply batch-size, and grace-period")
 parser.add_option("--batch-size", action="store", dest="batch", type=int, help="roll batch size - must supply with the roll flag")
