@@ -80,7 +80,7 @@ def get_groups(grep_list, ungrep_list):
         # is so, need to return only the groups that matches the search
         group_name = group['name'].lower()
         if [n for n in grep_list if n in group_name] and not [n for n in ungrep_list if n in group_name]:
-            groups_dict[group['name']] = [group['id'], group['capacity']['minimum'], group['capacity']['target'], group['capacity']['maximum']]
+            groups_dict[group['name']] = [group['id'], group['capacity']['minimum'], group['capacity']['target'], group['capacity']['maximum'], group['compute']['launchSpecification']['imageId']]
     # sort the list by name
     sorted_inst = OrderedDict(sorted(groups_dict.items()))
     return sorted_inst
@@ -105,12 +105,12 @@ def get_groups_exact(grep_list, ungrep_list):
     return sorted_inst
 # This function prints groups as a table
 def print_all_groups(groups_to_print):
-    table = PrettyTable(['#' ,'Group name', 'ID', 'Min', 'Target', 'Max'])
+    table = PrettyTable(['#' ,'Group name', 'ID', 'Min', 'Target', 'Max', 'AMI ID'])
     table.align = "l"
     table.border = True
     counter = 1
     for key, value in groups_to_print.iteritems():
-        table.add_row([counter, key, value[0], value[1], value[2], value[3]])
+        table.add_row([counter, key, value[0], value[1], value[2], value[3], value[4]])
         counter += 1
     print_message("Found the following groups: ")
 
