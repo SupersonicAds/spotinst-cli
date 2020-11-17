@@ -1,4 +1,7 @@
+# NOTICE: THIS TOOL IS RETIRED AND WILL NOT BE MAINTAINED. USE [SPOTCLI](https://github.com/SupersonicAds/spotcli) INSTEAD.
+
 # spotinst-cli
+
 spotinst-cli is is an interactive command line tool which allows you to to control your spotinst groups and instances.
 
 ### Usage  
